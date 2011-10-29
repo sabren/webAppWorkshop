@@ -507,7 +507,7 @@ class RequestBuilder(object):
             content=content or self.fetchContent(),
             remoteAddress = remoteAddress or "unknownhost")
     def fetchContent(self):
-        return sys.stdin.read(int(os.environ.get("CONTENT_LENGTH",0)))
+        return sys.stdin.read(int(os.environ.get("CONTENT_LENGTH",0) or 0))
 # * Request
 # ** test
 class RequestTest(unittest.TestCase):
