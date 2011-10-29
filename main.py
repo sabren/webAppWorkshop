@@ -6,9 +6,8 @@ This is the main dispatcher for http://*.webappworkshop.com/
 """
 from google.appengine.ext.webapp import util
 from Cookie import SimpleCookie
-import logging
-import os, sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'mylib'))
+import os, sys, logging
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
 
 import weblib, handy
 
