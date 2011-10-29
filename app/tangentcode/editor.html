@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Editor</title>
+  <style type="text/css" media="screen">
+
+    body {
+      overflow: hidden;
+      background: #999;
+      width: 800px;
+      margin: auto;
+      padding-top: 100px;
+    }
+
+    #camera /* as in the area I use for screencasts */
+    {
+      width: 800px;
+      height: 600px;
+      position: relative;
+      border: dotted #888 5px;
+      -moz-border-radius: 15px;
+      border-radius: 15px;
+    }
+
+    h1, #toolbar {
+      position: absolute;
+      top: 10px;
+      font-family: "Franklin Gothic Demi Cond", "'Deja Vu Sans Mono'", sans-serif;
+      color: #666;
+      padding-left: 10px;
+      margin-top: 10px;
+      font-size: 16pt;
+    }
+
+    #toolbar
+    {
+      right: 20px;
+    }
+    #toolbar li
+    {
+      display: inline;
+      margin-left: 20px;
+    }
+
+    #codeBrowser select,
+    #editor,
+    #trail select,
+    #canvas
+    {
+      -moz-box-shadow: 10px 10px 5px #666;
+    }
+
+    #codeBrowser, #trail
+    {
+      position: absolute;
+      top: 50px;
+    }
+
+    #codeBrowser
+    {
+      left: 10px;
+      margin-left: 0;
+      margin-right: 0;
+      width: 600px;
+      margin-bottom: 5px;
+    }
+
+    #codeBrowser select
+    {
+      margin: 0;
+      margin-right: 7px;
+      width: 184px;
+      height: 150px;
+      display: inline-block;
+    }
+
+
+    #trail
+    {
+      right: 20px;
+    }
+    #trail select
+    {
+      height: 150px;
+      width: 184px;
+    }
+
+    #trail select,
+    #trail select option
+    {
+      background: #ffffAA;
+    }
+
+    #canvas
+    {
+      position: absolute;
+      left: 10px;
+      width: 280px;
+      bottom: 20px;
+      height: 360px;
+      background: #99AAff;
+    }
+
+    #editor {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        font-family: consolas, courier, monospace;
+        margin: 0;
+        width: 470px;
+        height: 360px;
+        overflow-x: hidden;
+        background: white;
+        color: white;
+    }
+
+  </style>
+</head>
+<body>
+
+
+<div id="camera">
+
+  <h1>TangentCode</h1>
+  <ul id="toolbar">
+    <li>NEW</li>
+    <li>RUN</li>
+    <li>SAVE</li>
+    <li>SHARE</li>
+    <li>&lt;</li>
+    <li>&gt;</li>
+  </ul>
+
+  <nav id="trail">
+    <select multiple="multiple">
+      <option></option>
+    </select>
+  </nav>
+
+  <nav id="codeBrowser">
+    <select multiple="multiple">
+      <option></option>
+    </select>
+    <select multiple="multiple">
+      <option></option>
+    </select>
+    <select multiple="multiple">
+      <option></option>
+    </select>
+  </nav>
+
+  <canvas id="canvas">
+
+  </canvas>
+
+<!-- on left or it will indent. display:none only until ace loads -->
+<pre id="editor"><code style="display:none">/**
+ * Draw a dang old rectangle on the screen;
+ */
+@Override
+public void render()
+{
+    stroke(0x000000);
+    fill(0xffffff);
+    rect(this.x, this.y, this.w, this.h);
+}
+</code></pre>
+</div>
+
+<script src="/static/js/ace-0.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/ace-0.2.0/theme-eclipse.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/ace-0.2.0/mode-java.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/ace-0.2.0/mode-python.js" type="text/javascript" charset="utf-8"></script>
+<script>
+window.onload = function() {
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/eclipse");
+    
+    var LangMode = require("ace/mode/java").Mode;
+    editor.getSession().setMode(new LangMode());
+};
+</script>
+
+</body>
+</html>
