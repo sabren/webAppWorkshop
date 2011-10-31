@@ -1,0 +1,66 @@
+#+TITLE: Trailblazer Methodology
+
+* Purpose : A research-driven methodology for SaaS/DaaP companies.
+
+* SaaS = Software as a Service
+** cornerhost
+** versionhost
+** new tools in development:
+*** rantelope
+*** planaconda
+
+* DaaP = Development as a Product 
+** haskrocket model
+** named, "packaged" tasks:
+*** app engine jumpstart
+*** openID integration
+** train your team
+
+
+* Technology Tree
+** central organizing metaphor for research
+** forethought: we need x, y, and z... do our early choices supply it?
+** combined with branches, the tree allows you to switch technologies later.
+*** Why? Because you can re-walk the same trail.
+*** The domain problems are likely to be the same regardless of the supplying tech.
+*** The trail records the solutions to the domain problems.
+*** You only have to deal with the tech problems.
+
+
+* Platonic applications / domain-tech firewall (ensemble)
+** as much as possible, avoid dependencies in the domain/logic stuff.
+** define an interface to the underlying suppliers.
+** even the implementation language should be up for grabs.
+** A scripting layer for abstract components, written in underlying code.
+** Ensemble would let you assemble components based on any language.
+** Write thin layers
+
+
+
+* Auxilliary Programming Language (scarlet/coderef/ensemble)
+** Write your code in scarlet (or whateve), COMPILE to language X.
+** Compile new auxlangs to scarlet (ie, with MPS)
+
+
+* Branching Policy
+** numbered branch for each task
+*** Each task gets a 4-digit hex code (6+ if you're a mega-corporation)
+*** Tasks get their own branch, so we can jump to them
+*** Lots of commits within the branch, so we see the trail
+*** Method-based version control makes this especially handy.
+This can be implemented at the IDE level, hence tangentcode.
+*** Rationale:
+A completed software project is sort of a "gestalt".
+All the pieces sort of grew up together.
+That information isn't recorded in any design documents.
+It MAY live in your version control history, if you're careful.
+Mylyn also captures some of this.
+** named branch for each app
+*** Rationale:
+This way, each application has a pure line to work from that
+only contains the code it needs.
+*** examples:
+**** app-rantelope
+**** app-planaconda
+**** app-tangentcode
+**** app-workshop
