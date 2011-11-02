@@ -1,10 +1,12 @@
 import logging, re
 from app.tangentcode import editor, instacrud, errors
+import weblib
 
 get = "GET"
 put = "PUT"
 post = "POST"
 delete = "DELETE"
+
 
 urlMap =[(re.compile(path), handlers) for path, handlers in
 [
@@ -27,17 +29,22 @@ urlMap =[(re.compile(path), handlers) for path, handlers in
 ]]
 
 
+#!! pycharm 2 EAP doesn't like for...else
+#noinspection PyUnboundLocalVariable
 def main(req, res):
     """
     Dispatch based on the urlMap above.
 
-    :param req:
-    :param res:
+    :type req: weblib.Request
+    :type res: weblib.Response
     :return:
     """
+    assert isinstance(req, weblib.Request)
     for path, handlers in urlMap:
-        if path.match(req.path):
+        match = path.match(req.path)
+        if match:
             if handlers.has_key(req.method):
+                req.pathArgs = match.groupdict()
                 method = handlers[req.method]
             else:
                 method = errors.err405MethodNotSupported
