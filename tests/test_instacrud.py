@@ -1,12 +1,30 @@
 import unittest
+from django.utils import simplejson
 from gaetestbed.datastore import DataStoreTestCase
 from app.tangentcode import instacrud
+import weblib
 
 class InstaCRUDTest(DataStoreTestCase, unittest.TestCase):
 
+    def setUp(self):
+        self.req = weblib.RequestBuilder().build()
+
     def test_new_grid(self):
-        g = instacrud.new_grid(dict(name="people"),None)
-        self.assertEqual("people", g['name'])
+        rawData = dict(
+            name="people",
+            meta=[
+                ["str", "firstName"],
+                ["str", "lastName"],
+                ["int", "age"],
+                ["email", "email"],
+            ])
+
+        self.req.content = simplejson.dumps(rawData)
+        g = instacrud.new_grid(self.req, None)
+        self.assertEqual(rawData['name'], g.keys()[0])
+        self.assertEqual(rawData['meta'], g.values()[0])
+
+
 
 if __name__=="__main__":
     unittest.main()
