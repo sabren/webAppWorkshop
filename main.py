@@ -4,6 +4,7 @@
 """
 This is the main dispatcher for http://*.webappworkshop.com/
 """
+from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from Cookie import SimpleCookie
 import os, sys, logging
@@ -63,8 +64,10 @@ def weblib_app(environ, start_response):
         remoteAddress = environ["REMOTE_ADDR"],
     )
 
+    req.ob = webapp.Request(environ)
+
     main = findAppMain(req.host)
-    eng = AppEngineEngine(script=main)
+    eng = AppEngineEngine(script=main, request=req)
     eng.run()
 
     response = eng.response
