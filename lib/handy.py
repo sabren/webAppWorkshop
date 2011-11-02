@@ -2,7 +2,6 @@
 handy routines for python
 """
 import re
-from pytypes import Date
 import htmlentitydefs
 import md5
 import operator
@@ -12,13 +11,26 @@ import string
 import sys
 import tempfile
 import urllib
+import datetime
 from htmlentitydefs import name2codepoint, entitydefs
 
-try: from Ft.Xml.Domlette import NonvalidatingReader
-except: pass
+def trim(s):
+    """
+    strips leading indentation from a multi-line string.
+    for saving bandwith while making code look nice
+    """
+    lines = string.split(s, "\n")
 
-try: from genshi.template.text import NewTextTemplate
-except: pass
+    # strip leading blank line
+    if lines[0] == "":
+        lines = lines[1:]
+
+    # strip indentation
+    indent = len(lines[0]) - len(string.lstrip(lines[0]))
+    for i in range(len(lines)):
+        lines[i] = lines[i][indent:]
+
+    return string.join(lines, "\n")
 
 ZETTA = 10**21
 EXA   = 10**18
@@ -60,12 +72,12 @@ class switch(object):
 
 
 
-def daysInMonthPriorTo(day):
-    return (day - day.d).d
-
-
-def daysInLastMonth():
-    return daysInMonthPriorTo(Date("today"))
+#def daysInMonthPriorTo(day):
+#    return (day - day.d).d
+#
+#
+#def daysInLastMonth():
+#    return daysInMonthPriorTo( Date("today"))
 
 
 
