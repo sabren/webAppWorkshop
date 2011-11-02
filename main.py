@@ -70,7 +70,7 @@ def weblib_app(environ, start_response):
     response = eng.response
     out = weblib.OutputDecorator(eng)
 
-    status = "200 OK"
+    status = "500 Internal Server Error" if eng.hadProblem() else "200 OK"
     headers = [("Content-Type", response.contentType)]
     for k,v in response.headers:
         if k.lower() == "status":
