@@ -10,6 +10,12 @@ class GridModel(db.Model):
     seq = db.IntegerProperty()
     name = db.StringProperty()
 
+    def toDict(self):
+        return {
+            'url' : "/api/g/%i" % self.key().id(),
+            'name': self.name,
+        }
+
 class ColumnModel(db.Model):
     grid = db.ReferenceProperty(GridModel, collection_name="cols")
     seq = db.IntegerProperty()
@@ -23,11 +29,22 @@ class RowModel(db.Expando):
     json = db.StringProperty()
 
 
+class CRUDError(Exception):
+    pass
+
+def throw(ex):
+    raise ex
+
+
 def jsonify(func):
     @wraps(func)
-    def decorated(req, res):
-        res.contentType = "application/json"
-        simplejson.dump(func(req, res), res)
+    def decorated(req, res=None):
+        json = simplejson.dumps(func(req, res))
+        if res:
+            res.write(json)
+            res.contentType = "application/json"
+        else:
+            return simplejson.loads(json)
     return decorated
 
 @jsonify
@@ -37,32 +54,37 @@ def list_grids(req, res):
 
 @jsonify
 def new_grid(req, res):
-    return dict(url="/api/g/%i" % g.key().id())
+    name = req.get('name') or throw(CRUDError("no name given"))
+    g = GridModel.gql("WHERE name=:1", name)
+    if g.count(): raise CRUDError("%r exists" % name)
+    g = GridModel(name=name)
+    g.put()
+    return g.toDict()
 
 
-def get_table_meta(req, res):
+def get_grid_meta(req, res):
     return None
 
 
-def put_table_meta(req, res):
+def put_grid_meta(req, res):
     return None
 
 
-def put_table_row(req, res):
+def put_grid_row(req, res):
     return None
 
 
-def delete_table(req, res):
+def delete_grid(req, res):
     return None
 
 
-def get_table_data(req, res):
+def get_grid_data(req, res):
     return None
 
 
-def get_table_row(req, res):
+def get_grid_row(req, res):
     return None
 
 
-def delete_table_row(req, res):
+def delete_grid_row(req, res):
     return None
