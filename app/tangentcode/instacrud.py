@@ -62,7 +62,7 @@ def list_grids(req, res):
 
 
 @jsonify
-def new_grid(req, res):
+def create_grid(req, res):
     json = simplejson.loads(req.content)
     name = json.get('name') or throw(CRUDError("no name given. expected string"))
     meta = json.get('meta') or throw(CRUDError("no meta given. expected [[string type]]"))
@@ -71,7 +71,7 @@ def new_grid(req, res):
     g = GridModel(name=name, cols=0)
     g.put()
     for rowType, rowName in meta:
-        r = ColumnModel(grid=g, name=rowName, type=rowType)
+        r = ColumnModel(parent=g, grid=g, name=rowName, type=rowType)
         r.put()
         g.cols += 1
     g.put()

@@ -14,7 +14,7 @@ urlMap =[(re.compile(path), handlers) for path, handlers in
         get: editor.showEditor }),
     (r"/api/g/?$", {
         get: instacrud.list_grids,
-        post: instacrud.new_grid}),
+        post: instacrud.create_grid}),
     (r"/api/g/(?P<table>\w+)/?$", {
         get: instacrud.get_grid_meta,
         put: instacrud.put_grid_meta,

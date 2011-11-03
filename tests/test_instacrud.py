@@ -20,7 +20,7 @@ class InstaCRUDTest(DataStoreTestCase, unittest.TestCase):
             ])
 
         self.req.content = simplejson.dumps(rawData)
-        g = instacrud.new_grid(self.req, None)
+        g = instacrud.create_grid(self.req, None)
         self.assertEqual(rawData['name'], g.keys()[0])
         self.assertEqual(rawData['meta'], g.values()[0])
 
