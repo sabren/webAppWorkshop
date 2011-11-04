@@ -1,0 +1,57 @@
+#+TITLE: WebAppWorkshop Plan
+
+* Business Model
+** Do a bunch of research.
+** Share (parts of) the knowledge.
+** Charge clients to do specific jobs for them.
+** Blend findings into various apps and services.
+
+* Implementation Plan [ until I get planaconda working ]
+** DONE 0000-swap-main-by-host
+** DONE 0001-ace-code-editor
+** TODO 0002-swap-namespace
+** TODO 0003-crud-server-flat
+*** /api/t/? -> TableListHandler
+**** get -> list types
+**** post -> new type
+*** /api/t/(?P<type>\w+)/? -> TableHandler
+**** get -> get descriptiion [ [ name, type ] ]
+**** put -> update description
+**** post -> create row
+**** delete -> delete type and all instances
+*** /api/t/(?P<type>\w+)/data/? -> TablePageHandler
+**** get() -> { rowcount : n }
+**** get(o=0,n=25) -> [ row ] for n rows, from offset o
+*** /api/t/(?P<type>\w+/(?P<id>\d+)/? -> TableRowHandler
+**** get -> retrieve row
+**** put -> update row
+**** delete -> delete row
+** TODO 0004-planaconda basics
+*** projects
+*** named tasks
+*** named branches
+*** 
+** TODO 0005-
+** TODO 0006-
+** TODO 0007-
+** TODO 0008-
+** TODO 0009-
+** TODO 000A-
+** TODO 000B-
+** TODO 000C-
+** TODO 000D-
+** TODO 000E-
+** TODO 000F-
+
+** names:
+*** crud-client-grid-jeasyui
+http://www.jeasyui.com/tutorial/index.php
+*** crud-server-tree
+*** crud-client-tree-jeasyui
+*** crud-client-android
+*** crud-client-pjs
+*** crud-client-cs
+for android
+*** rant-tree-nav
+this is one place i can actually trump google docs
+
