@@ -8,9 +8,12 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from Cookie import SimpleCookie
 import os, sys, logging
+import errors
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
 
-import weblib, handy
+import weblib, handy, instacrud
+from urlmap import *
 
 class AppEngineEngine(weblib.Engine):
     """
@@ -66,7 +69,9 @@ def weblib_app(environ, start_response):
 
     req.ob = webapp.Request(environ)
 
-    main = findAppMain(req.host)
+    urls = getAppURLs(req.host)
+    main = getAppMain(urls, req)
+
     eng = AppEngineEngine(script=main, request=req)
     eng.run()
 
@@ -85,14 +90,33 @@ def weblib_app(environ, start_response):
     yield out.getBody()
 
 
-def findAppMain(serverName):
+def getAppURLs(serverName):
     """
-    Given a domain like foo.webappworkshop.com, this
-    checks for app/foo/foo.py
+    Given a domain like foo.webappworkshop.com,
+    this builds a map of the urls.
 
     :param serverName: the SERVER_NAME from wsgi
     :return: the imported root module, or None
     """
+    universal_api = urlMap([
+        (r"/api/g/?$", {
+            get: instacrud.list_grids,
+            post: instacrud.create_grid}),
+        (r"/api/g/(?P<table>\w+)/?$", {
+            get: instacrud.get_grid_meta,
+            #put: instacrud.put_grid_meta,
+            post: instacrud.create_grid_row,
+            #delete: instacrud.delete_grid
+        }),
+        (r"/api/g/(?P<table>\w+)/data/?$", {
+            get: instacrud.get_grid_data}),
+        (r"/api/g/(?P<table>\w+)/(?P<id>\d+)/?$", {
+            get: instacrud.get_grid_row,
+            put: instacrud.put_grid_row,
+            delete: instacrud.delete_grid_row}),
+    ])
+
+    res = universal_api
     if serverName.startswith("localhost"): return None
     if serverName.endswith("localhost"):
         appName = '.'.join(serverName.split('.')[:-1])
@@ -102,10 +126,40 @@ def findAppMain(serverName):
     if os.path.exists("app/%s/%s.py" % (appName, appName)):
         modname = 'app.%s.%s' % (appName, appName)
         exec 'import %s' % modname
-        return getattr(eval(modname), 'main')
+        extras = getattr(eval(modname), 'urls', None)
+        res.append(extras)
+        return res
     else:
         logging.debug("%s is not a valid app" % serverName)
-        return None
+        return res
+
+
+
+
+#!! pycharm 2 EAP doesn't like for...else
+#noinspection PyUnboundLocalVariable
+def getAppMain(urlMap, req):
+    """
+    :type urlMap: list of regexp->dict pairs
+    :type req: weblib.Request
+    :return:
+    """
+    assert isinstance(req, weblib.Request)
+    for path, handlers in urlMap:
+        match = path.match(req.path)
+        if match:
+            if handlers.has_key(req.method):
+                req.pathArgs = match.groupdict()
+                method = handlers[req.method]
+            else:
+                method = errors.err405MethodNotSupported
+            break
+    else:
+        method = errors.err404NotFound
+    logging.info("method is: %s", method.__name__)
+    return method
+
+
 
 
 if __name__ == '__main__':

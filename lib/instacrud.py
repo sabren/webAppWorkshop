@@ -1,5 +1,5 @@
 """
-InstaCRUD
+InstaCRUD: a generic data store and REST API.
 """
 from functools import wraps
 from django.utils import simplejson
