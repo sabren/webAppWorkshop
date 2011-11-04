@@ -10,30 +10,58 @@
 ** DONE 0000-swap-main-by-host
 ** DONE 0001-ace-code-editor
 ** TODO 0002-swap-namespace
-** TODO 0003-crud-server-flat
-*** /api/t/? -> TableListHandler
-**** get -> list types
-**** post -> new type
-*** /api/t/(?P<type>\w+)/? -> TableHandler
-**** get -> get descriptiion [ [ name, type ] ]
-**** put -> update description
-**** post -> create row
-**** delete -> delete type and all instances
-*** /api/t/(?P<type>\w+)/data/? -> TablePageHandler
-**** get() -> { rowcount : n }
-**** get(o=0,n=25) -> [ row ] for n rows, from offset o
-*** /api/t/(?P<type>\w+/(?P<id>\d+)/? -> TableRowHandler
-**** get -> retrieve row
-**** put -> update row
-**** delete -> delete row
+** DONE 0003-crud-server-flat
+*** /api/g/? # grid list
+**** DONE get -> list_grids
+**** DONE post -> create_grid
+*** /api/g/(?P<type>\w+)/ # individual grid
+**** DONE get -> get_grid_meta [ [ name, type ] ]
+"this should return the same data from posting"
+obj = select * from model where type = req.pathArgs.type
+return obj.toData
+**** DONE post -> create_grid_row
+get_meta, then create a row
+g.count += 1
+row = RowModel(seq = g.count)
+g.save
+*** /api/g/(?P<type>\w+)/all/
+**** DONE just dump all data
+*** /api/g/(?P<type>\w+/(?P<id>\d+)/? # grid rows
+**** DONE get -> get_row
+**** DONE put -> put_row
+**** DONE delete -> delete_row
+*** transactions
+**** DONE make sure a row is in same entitygroup as grid
+**** DONE make sure a col is in same entitygroup as grid
+**** DONE add row should be in a transaction
 ** TODO 0004-planaconda basics
 *** projects
 *** named tasks
 *** named branches
 *** 
-** TODO 0005-
-** TODO 0006-
-** TODO 0007-
+** TODO 0005-weblib-cleanup
+*** you should just be able to make a Request()
+*** maybe MockRequest() out of the box...
+*** Response() should be pure wsgi
+*** Can I use webOb for these?
+*** define HTTP_400_BAD_REQUEST, and so on
+*** addHeader should be supplemented with setHeader
+*** better yet: just have .status, .contentType, etc.
+** TODO 0006-counter-shards
+this is best practice for counters (ie, instacrud.seq):
+http://code.google.com/appengine/articles/sharding_counters.html
+** TODO 0007-crud-api-ehancements
+*** /api/g/(?P<type>\w+)/page/? # grid data paging
+**** TODO get -> get_grid_page (page, n/page)
+{ count: page; pageSize: int, page = 1}
+get(o=0,n=25) -> [ row ] for n rows, from offset o
+
+*** /api/g/(?P<type>\w+)/ # individual grid
+**** TODO put -> put_grid_meta
+same as get_meta, but then update
+return obj.toData
+**** TODO delete -> delete_grid
+
 ** TODO 0008-
 ** TODO 0009-
 ** TODO 000A-

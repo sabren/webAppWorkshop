@@ -1,0 +1,110 @@
+#+TITLE: Scarlet
+
+
+Instead of just designing this up front, how can I define use cases?
+MPS gives me a really nice system for adding features incrementally.
+Can I get ANTLR to support that?
+
+Maybe I could define some "Syntax" concepts that modelled the Antlr grammar,
+and then those could just be static properties of each concept.
+
+Hrm. Well, actually, MPS already gives me syntax definitions. Maybe I could
+just read those and use them as the basis for my antlr parsers.
+
+The point is, I could write real code in Scarlet through MPS without having
+to nail down the syntax.
+
+
+* one class per file
+* polymorphic
+
+* pronouns [ self it ]
+
+
+* embed sublanguages with xx{ }
+including itself with qu{ } and uq{ }
+
+* do() as generic lambda (like ruby)
+switch(x)
+  on re{/t/api/} print it
+  on re{/t/api/} do
+     it.api()
+  end
+  on re{/t/api(?name:\w+)/} do re.name
+  end
+  else pass
+end
+
+* matrix notation (octave)
+mA = [ 0 1 2 ; 3 4 5 ]
+mA = math.ones()
+mA = math.eye()
+
+* [ ] for lists, dicts, arrays
+list:    [ 0 1 2 3 ]  # commas optional
+matrix:  [ 1 0 ; 0 1 ] 
+ordered: [ x : 1 , y : 1 ]
+hash: { x : 1, y : 1 }
+
+* labels can name a block
+loop: do
+   print("hello")
+   goto loop
+end
+
+* or a data structure
+
+people:
+    - fred
+    - john
+    - sally
+    
+* prolog style delcarations:
+
+- luke -dad> vader
+- 
+
+
+
+
+
+
+* impertative syntax
+** labels
+:label
+** goto
+goto :label
+** blocks
+*** while
+*** until
+*** break
+*** continue
+
+* comprehension syntax
+*** (for x in xs, y in ys if x < 3 and y > x)
+for x in y if x > 3
+
+* logic syntax
+
+* generator syntax
+*** yield
+
+
+* functional syntax
+*** list comp
+*** do(param) ... end
+*** case
+case x of
+   1 : 
+   5 : 
+   else xxx
+* data
+** <data>
+
+
+* haskell style data types
+
+data List E
+   | <nil> 
+   | <cons E List>
+
