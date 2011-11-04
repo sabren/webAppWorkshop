@@ -17,12 +17,13 @@ urlMap =[(re.compile(path), handlers) for path, handlers in
         post: instacrud.create_grid}),
     (r"/api/g/(?P<table>\w+)/?$", {
         get: instacrud.get_grid_meta,
-        put: instacrud.put_grid_meta,
-        post: instacrud.put_grid_row,
-        delete: instacrud.delete_grid}),
+        #put: instacrud.put_grid_meta,
+        post: instacrud.create_grid_row,
+        #delete: instacrud.delete_grid
+        }),
     (r"/api/g/(?P<table>\w+)/data/?$", {
         get: instacrud.get_grid_data}),
-    (r"/api/(?P<table>\w+)/(?P<id>\d+)/?$", {
+    (r"/api/g/(?P<table>\w+)/(?P<id>\d+)/?$", {
         get: instacrud.get_grid_row,
         put: instacrud.put_grid_row,
         delete: instacrud.delete_grid_row}),

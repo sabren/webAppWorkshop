@@ -10,10 +10,14 @@ from google.appengine.ext import db
 class GridModel(db.Model):
     seq = db.IntegerProperty()
     name = db.StringProperty()
-    cols = db.IntegerProperty()
+    colCount = db.IntegerProperty(default=0)
+    rowCount = db.IntegerProperty(default=0)
 
-    def toDict(self):
-        return { self.name :[c.toList() for c in self.columns] }
+    def toData(self):
+        return {
+            "grid": self.name,
+            "meta": [c.toData() for c in self.columns],
+            "rowCount": self.rowCount }
 
 class ColumnModel(db.Model):
     grid = db.ReferenceProperty(GridModel, collection_name="columns")
@@ -22,13 +26,19 @@ class ColumnModel(db.Model):
     type = db.StringProperty()
     help = db.StringProperty()
 
-    def toList(self):
+    def toData(self):
         return [self.type, self.name]
 
 class RowModel(db.Expando):
     grid = db.ReferenceProperty(GridModel, collection_name="rows")
     seq = db.IntegerProperty()
     json = db.StringProperty()
+
+    def toData(self):
+        data = simplejson.loads(self.json)
+        data['seq'] = self.seq
+        data['id'] = self.key().id()
+        return data
 
 
 class CRUDError(Exception):
@@ -43,6 +53,12 @@ def jsonify(func):
     def decorated(req, res=None):
         try:
             json = simplejson.dumps(func(req, res))
+        except LookupError, e:
+            if not res: raise
+            res.addHeader('status', '404 not found')
+            res.contentType = "text/plain"
+            res.write(e.message)
+            return e
         except CRUDError, e:
             if not res: raise
             res.addHeader('status', '400 bad request')
@@ -58,7 +74,7 @@ def jsonify(func):
 
 @jsonify
 def list_grids(req, res):
-    return [g.toDict() for g in GridModel.all()]
+    return [g.toData() for g in GridModel.all()]
 
 
 @jsonify
@@ -67,45 +83,94 @@ def create_grid(req, res):
     name = json.get('name') or throw(CRUDError("no name given. expected string"))
     meta = json.get('meta') or throw(CRUDError("no meta given. expected [[string type]]"))
     g = GridModel.gql("WHERE name=:1", name)
-    if g.count(): raise CRUDError("%r exists" % name)
+    if g.count(): raise CRUDError("%r already exists" % name)
     g = GridModel(name=name, cols=0)
     g.put()
     for rowType, rowName in meta:
         r = ColumnModel(parent=g, grid=g, name=rowName, type=rowType)
         r.put()
-        g.cols += 1
+        g.colCount += 1
     g.put()
-    return g.toDict()
+    return g.toData()
 
 
+def gridFromPath(req):
+    """
+    Build a Grid from the URL path.
+    """
+    name = req.pathArgs.get("table") or throw(CRUDError("no table name given. expected string"))
+    g = GridModel.gql("WHERE name=:1", name)
+    if not g.count(): raise CRUDError("%r doesn't exist" % name)
+    return g[0]
+
+
+@jsonify
 def get_grid_meta(req, res):
-    return None
+    g = gridFromPath(req)
+    return g.toData()
 
 
-def put_grid_meta(req, res):
+def put_grid_meta(req, res): # TODO : put_grid_meta
     names = req.get("names", [])
     types = req.get("types", [])
     if len(names) != len(types):
         raise CRUDError("please supply the same number of names and types!")
     if not len(names):
         raise CRUDError("please supply names and types for the columns.")
+    raise NotImplementedError()
 
 
-def put_grid_row(req, res):
-    return None
+@jsonify
+def create_grid_row(req, res):
+    data = simplejson.loads(req.content) # make sure it parses
+    json = simplejson.dumps(data)
+    g = gridFromPath(req)
+    def txn():
+        g.rowCount += 1
+        row = RowModel(parent=g, grid=g, json=json, seq = g.rowCount)
+        g.put()
+        row.put()
+        return row
+    row = db.run_in_transaction(txn)
+    return row.toData()
 
 
 def delete_grid(req, res):
-    return None
+    raise NotImplementedError()
 
-
+@jsonify
 def get_grid_data(req, res):
-    return None
+    g = gridFromPath(req)
+    return [row.toData() for row in sorted(g.rows, lambda a,b: cmp(a.seq, b.seq))]
 
 
+def rowFromPath(req):
+    g = gridFromPath(req)
+    rid = long(req.pathArgs.get("id"))
+    row = RowModel.get_by_id(rid, parent=g)
+    if not row: raise LookupError("No %s with ID %s" % (g.name, rid))
+    return row
+
+
+@jsonify
 def get_grid_row(req, res):
-    return None
+    row = rowFromPath(req)
+    return row.toData()
+
+@jsonify
+def put_grid_row(req, res):
+    row = RowModel.get_by_id(int(req.pathArgs.get("id")))
+    row.json = req.content
+    return row.toData()
 
 
+@jsonify
 def delete_grid_row(req, res):
-    return None
+    row = rowFromPath(req)
+    g = row.grid
+    def txn():
+        row.delete()
+        g.rowCount -= 1
+        g.put()
+    db.run_in_transaction(txn)
+    return g.toData()
