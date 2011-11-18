@@ -98,22 +98,30 @@ def getAppURLs(serverName):
     :param serverName: the SERVER_NAME from wsgi
     :return: the imported root module, or None
     """
-    universal_api = urlMap([
-        (r"/api/g/?$", {
+    universal_api =urlMap(
+    [
+        (r"/api/g/?$",
+        {
             get: instacrud.list_grids,
-            post: instacrud.create_grid}),
-        (r"/api/g/(?P<table>\w+)/?$", {
+            post: instacrud.create_grid
+        }),
+        (r"/api/g/(?P<table>\w+)/?$",
+        {
             get: instacrud.get_grid_meta,
             #put: instacrud.put_grid_meta,
             post: instacrud.create_grid_row,
             #delete: instacrud.delete_grid
         }),
-        (r"/api/g/(?P<table>\w+)/data/?$", {
-            get: instacrud.get_grid_data}),
-        (r"/api/g/(?P<table>\w+)/(?P<id>\d+)/?$", {
+        (r"/api/g/(?P<table>\w+)/data/?$",
+        {
+            get: instacrud.get_grid_data
+        }),
+        (r"/api/g/(?P<table>\w+)/(?P<id>\d+)/?$",
+        {
             get: instacrud.get_grid_row,
             put: instacrud.put_grid_row,
-            delete: instacrud.delete_grid_row}),
+            delete: instacrud.delete_grid_row
+        }),
     ])
 
     res = universal_api
@@ -127,7 +135,7 @@ def getAppURLs(serverName):
         modname = 'app.%s.%s' % (appName, appName)
         exec 'import %s' % modname
         extras = getattr(eval(modname), 'urls', None)
-        res.append(extras)
+        res.extend(extras)
         return res
     else:
         logging.debug("%s is not a valid app" % serverName)
