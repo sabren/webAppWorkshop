@@ -8,12 +8,12 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from Cookie import SimpleCookie
 import os, sys, logging
-import errors
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
+sys.path.extend([os.path.join(os.path.dirname(__file__), path)
+                for path in ['lib','libcopy']])
 
-import weblib, handy, instacrud
-from urlmap import *
+import weblib, handy
+import ERR, REST, CRUD
 
 class AppEngineEngine(weblib.Engine):
     """
@@ -98,29 +98,29 @@ def getAppURLs(serverName):
     :param serverName: the SERVER_NAME from wsgi
     :return: the imported root module, or None
     """
-    universal_api =urlMap(
+    universal_api = REST.urlMap(
     [
         (r"/api/g/?$",
         {
-            get: instacrud.list_grids,
-            post: instacrud.create_grid
+            REST.get: CRUD.list_grids,
+            REST.post: CRUD.create_grid
         }),
         (r"/api/g/(?P<table>\w+)/?$",
         {
-            get: instacrud.get_grid_meta,
-            #put: instacrud.put_grid_meta,
-            post: instacrud.create_grid_row,
-            #delete: instacrud.delete_grid
+            REST.get: CRUD.get_grid_meta,
+            #put: CRUD.put_grid_meta,
+            REST.post: CRUD.create_grid_row,
+            #delete: CRUD.delete_grid
         }),
         (r"/api/g/(?P<table>\w+)/data/?$",
         {
-            get: instacrud.get_grid_data
+            REST.get: CRUD.get_grid_data
         }),
         (r"/api/g/(?P<table>\w+)/(?P<id>\d+)/?$",
         {
-            get: instacrud.get_grid_row,
-            put: instacrud.put_grid_row,
-            delete: instacrud.delete_grid_row
+            REST.get: CRUD.get_grid_row,
+            REST.put: CRUD.put_grid_row,
+            REST.delete: CRUD.delete_grid_row
         }),
     ])
 
@@ -134,7 +134,7 @@ def getAppURLs(serverName):
     if os.path.exists("app/%s/%s.py" % (appName, appName)):
         modname = 'app.%s.%s' % (appName, appName)
         exec 'import %s' % modname
-        extras = getattr(eval(modname), 'urls', None)
+        extras = getattr(eval(modname), 'urls', [])
         res.extend(extras)
         return res
     else:
@@ -142,10 +142,6 @@ def getAppURLs(serverName):
         return res
 
 
-
-
-#!! pycharm 2 EAP doesn't like for...else
-#noinspection PyUnboundLocalVariable
 def getAppMain(urlMap, req):
     """
     :type urlMap: list of regexp->dict pairs
@@ -160,10 +156,10 @@ def getAppMain(urlMap, req):
                 req.pathArgs = match.groupdict()
                 method = handlers[req.method]
             else:
-                method = errors.err405MethodNotSupported
+                method = ERR.err405MethodNotSupported
             break
     else:
-        method = errors.err404NotFound
+        method = ERR.err404NotFound
     logging.info("method is: %s", method.__name__)
     return method
 
@@ -171,6 +167,6 @@ def getAppMain(urlMap, req):
 
 
 if __name__ == '__main__':
-    if (os.environ["SERVER_NAME"]).endswith("localhost"):
+    if os.environ["SERVER_NAME"].endswith("localhost"):
         logging.getLogger().setLevel(logging.DEBUG)
     util.run_wsgi_app(weblib_app)

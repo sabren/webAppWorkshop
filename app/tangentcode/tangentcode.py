@@ -2,9 +2,9 @@
 URL map for tangentcode.
 """
 from app.tangentcode import editor
-from urlmap import *
+import REST
 
-urls = urlMap([
+urls = REST.urlMap([
     (r"/$", {
-        get: editor.showEditor }),
-    ])
+        REST.get: editor.showEditor }),
+])
