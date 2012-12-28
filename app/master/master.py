@@ -1,3 +1,5 @@
+import REST
+
 def main(req, res):
     """
     :param weblib.Request req
@@ -17,3 +19,9 @@ def main(req, res):
         </html>
         """
         % req.host )
+
+
+urls = REST.urlMap([
+    (r"/$", {
+        REST.get: main }),
+    ])
