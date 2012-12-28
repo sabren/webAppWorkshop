@@ -1,5 +1,3 @@
-import handy
-
 def main(req, res):
     """
     :param weblib.Request req
