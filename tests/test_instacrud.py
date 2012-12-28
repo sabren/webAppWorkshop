@@ -1,7 +1,7 @@
 import unittest
 from django.utils import simplejson
 from gaetestbed.datastore import DataStoreTestCase
-from app.tangentcode import instacrud
+import CRUD
 import weblib
 
 class InstaCRUDTest(DataStoreTestCase, unittest.TestCase):
@@ -20,7 +20,7 @@ class InstaCRUDTest(DataStoreTestCase, unittest.TestCase):
             ])
 
         self.req.content = simplejson.dumps(rawData)
-        g = instacrud.create_grid(self.req, None)
+        g = CRUD.create_grid(self.req, None)
         self.assertEqual(rawData['name'], g.keys()[0])
         self.assertEqual(rawData['meta'], g.values()[0])
 
