@@ -1,0 +1,35 @@
+#+title: tangentstuff (claritygame precursor for google app-engine)
+
+* user manual / use cases
+** DONE [2/2] logging in
+*** DONE at very least : log in with google account
+*** DONE simple federated login
+I just grabbed the OpenID example code from https://developers.google.com/appengine/articles/openid#ex
+** TODO typed lists (tables)
+*** TODO users can create arbitrary tables
+# This is easy in theory: just copy instacrud. But then I have to add a UI.
+** TODO adding items to the inbox
+*** TODO user interface nudges users to process inbox rather than let it sit
+**** TODO users see only a limited number of items
+**** TODO oldest items appear first, requiring paging to see new things
+** TODO [0/3] categorizing items
+*** TODO by purpose (the master tree)
+*** TODO by priority
+*** TODO by various other ad-hoc properties
+** TODO [0/3] clarifying your values
+*** TODO input values as simple list
+*** TODO reorder values using jquery.ui
+*** TODO value hierarchy elicitation                                :later:
+** TODO [0/0] drilling down to goals
+
+* internal structure
+** TODO the database
+** TODO type system
+** TODO task chooser
+** TODO meta-programming
+** TODO pause/resume tasks
+** TODO scripted interaciton
+** TODO forms/dialogs
+** TODO multi-tasking
+** TODO garbage collection
+** TODO guided search
