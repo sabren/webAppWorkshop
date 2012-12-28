@@ -1,0 +1,3 @@
+[submodule "sub/workshop"]
+	path = sub/workshop
+	url = git@github.com:sabren/workshop
