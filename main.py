@@ -9,7 +9,9 @@ from google.appengine.ext.webapp import util
 from Cookie import SimpleCookie
 import os, sys, logging
 
-sys.path.extend(['lib','libcopy'])
+sys.path.extend([os.path.join(os.path.dirname(__file__), path)
+                for path in ['lib','sub/workshop']])
+
 
 import weblib, handy
 import ERR, REST, CRUD
