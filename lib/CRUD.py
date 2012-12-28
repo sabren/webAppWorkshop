@@ -51,13 +51,13 @@ def jsonify(func):
     def decorated(req, res=None):
         try:
             asJson = json.dumps(func(req, res))
-        except LookupError, e:
+        except LookupError as e:
             if not res: raise
             res.addHeader('status', '404 not found')
             res.contentType = "text/plain"
             res.write(e.message)
             return e
-        except CRUDError, e:
+        except CRUDError as e:
             if not res: raise
             res.addHeader('status', '400 bad request')
             res.contentType = "text/plain"
