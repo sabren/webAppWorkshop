@@ -64,7 +64,7 @@ def jsonify(func):
             res.write(e.message)
             return e
         if res:
-            res.write(json)
+            res.write(asJson)
             res.contentType = "application/json"
         else:
             return json.loads(asJson)
