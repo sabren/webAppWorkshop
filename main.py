@@ -9,8 +9,7 @@ from google.appengine.ext.webapp import util
 from Cookie import SimpleCookie
 import os, sys, logging
 
-sys.path.extend([os.path.join(os.path.dirname(__file__), path)
-                for path in ['lib','libcopy']])
+sys.path.extend(['lib','libcopy'])
 
 import weblib, handy
 import ERR, REST, CRUD
@@ -92,6 +91,8 @@ def weblib_app(environ, start_response):
 
 def getAppURLs(serverName):
     """
+    :: Str -> []
+
     Given a domain like foo.webappworkshop.com,
     this builds a map of the urls.
 
@@ -124,22 +125,23 @@ def getAppURLs(serverName):
         }),
     ])
 
-    res = universal_api
-    if serverName.startswith("localhost"): return None
-    if serverName.endswith("localhost"):
-        appName = '.'.join(serverName.split('.')[:-1])
+    if serverName.startswith("localhost"):
+        res = []
     else:
-        appName = '.'.join(serverName.split('.')[:-2])
-    logging.debug("appName is %r" % appName)
-    if os.path.exists("app/%s/%s.py" % (appName, appName)):
-        modname = 'app.%s.%s' % (appName, appName)
-        exec 'import %s' % modname
-        extras = getattr(eval(modname), 'urls', [])
-        res.extend(extras)
-        return res
-    else:
-        logging.debug("%s is not a valid app" % serverName)
-        return res
+        res = universal_api
+        cut = -1 if serverName.endswith("localhost") else -2
+
+        appName = '.'.join(serverName.split('.')[:cut])
+        logging.debug("appName is %r" % appName)
+
+        if os.path.exists("app/%s/%s.py" % (appName, appName)):
+            modname = 'app.%s.%s' % (appName, appName)
+            exec 'import %s' % modname
+            extras = getattr(eval(modname), 'urls', [])
+            res.extend(extras)
+        else:
+            logging.debug("%s is not a valid app" % serverName)
+    return res
 
 
 def getAppMain(urlMap, req):
